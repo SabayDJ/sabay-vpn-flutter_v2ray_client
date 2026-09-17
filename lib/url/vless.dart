@@ -32,7 +32,6 @@ class VlessURL extends V2RayURL {
     );
     super.populateTlsSettings(
       streamSecurity: uri.queryParameters['security'] ?? '',
-      allowInsecure: allowInsecure,
       sni: uri.queryParameters['sni'] ?? sni,
       fingerprint: uri.queryParameters['fp'] ??
           streamSetting['tlsSettings']?['fingerprint'],
@@ -40,6 +39,9 @@ class VlessURL extends V2RayURL {
       publicKey: uri.queryParameters['pbk'] ?? '',
       shortId: uri.queryParameters['sid'] ?? '',
       spiderX: uri.queryParameters['spx'] ?? '',
+      pinnedPeerCertSha256: uri.queryParameters['pcs'] ??
+          uri.queryParameters['pinSHA256'],
+      verifyPeerCertByName: uri.queryParameters['vcn'],
     );
   }
 

@@ -14,9 +14,6 @@ abstract class V2RayURL {
   /// The original URL string provided during construction.
   final String url;
 
-  /// Whether to allow insecure connections (default: false).
-  bool get allowInsecure => false;
-
   /// The security method for the connection (default: 'auto').
   String get security => 'auto';
 
@@ -77,14 +74,17 @@ abstract class V2RayURL {
       'network': null,
       'address': null,
       'port': null,
-      'domainStrategy': 'UseIp',
       'redirect': null,
       'userLevel': null,
       'inboundTag': null,
       'secretKey': null,
       'peers': null
     },
-    'streamSettings': null,
+    'streamSettings': {
+      'sockopt': {
+        'domainStrategy': 'UseIP',
+      },
+    },
     'proxySettings': null,
     'sendThrough': null,
     'mux': null
@@ -299,47 +299,58 @@ abstract class V2RayURL {
   /// Populates the TLS/reality settings for the connection.
   ///
   /// [streamSecurity] specifies the security method ('tls' or 'reality').
-  /// [allowInsecure] whether to allow insecure connections.
   /// [sni] is the server name indicator.
   /// [fingerprint] is the fingerprint for TLS.
   /// [alpns] are the application layer protocol negotiation strings.
   /// [publicKey] is the public key for reality.
   /// [shortId] is the short ID for reality.
   /// [spiderX] is the spiderX for reality.
+  /// [pinnedPeerCertSha256] certificate SHA-256 pin(s), share-link `pcs`.
+  /// [verifyPeerCertByName] cert name(s) to verify, share-link `vcn`.
   void populateTlsSettings({
     required String? streamSecurity,
-    required bool allowInsecure,
     required String? sni,
     required String? fingerprint,
     required String? alpns,
     required String? publicKey,
     required String? shortId,
     required String? spiderX,
+    String? pinnedPeerCertSha256,
+    String? verifyPeerCertByName,
   }) {
     streamSetting['security'] = streamSecurity;
-    final tlsSetting = <String, dynamic>{
-      'allowInsecure': allowInsecure,
-      'serverName': sni,
-      'alpn': alpns == '' ? null : alpns?.split(','),
-      'minVersion': null,
-      'maxVersion': null,
-      'preferServerCipherSuites': null,
-      'cipherSuites': null,
-      'fingerprint': fingerprint,
-      'certificates': null,
-      'disableSystemRoot': null,
-      'enableSessionResumption': null,
-      'show': false,
-      'publicKey': publicKey,
-      'shortId': shortId,
-      'spiderX': spiderX,
-    };
+    final pin = (pinnedPeerCertSha256 == null || pinnedPeerCertSha256.isEmpty)
+        ? null
+        : pinnedPeerCertSha256;
+    final vcn = (verifyPeerCertByName == null || verifyPeerCertByName.isEmpty)
+        ? null
+        : verifyPeerCertByName;
     if (streamSecurity == 'tls') {
       streamSetting['realitySettings'] = null;
-      streamSetting['tlsSettings'] = tlsSetting;
+      streamSetting['tlsSettings'] = <String, dynamic>{
+        'serverName': sni,
+        'alpn': alpns == '' ? null : alpns?.split(','),
+        'minVersion': null,
+        'maxVersion': null,
+        'preferServerCipherSuites': null,
+        'cipherSuites': null,
+        'fingerprint': fingerprint,
+        'certificates': null,
+        'disableSystemRoot': null,
+        'enableSessionResumption': null,
+        'pinnedPeerCertSha256': pin,
+        'verifyPeerCertByName': vcn,
+      };
     } else if (streamSecurity == 'reality') {
       streamSetting['tlsSettings'] = null;
-      streamSetting['realitySettings'] = tlsSetting;
+      streamSetting['realitySettings'] = <String, dynamic>{
+        'serverName': sni,
+        'fingerprint': fingerprint,
+        'show': false,
+        'publicKey': publicKey,
+        'shortId': shortId,
+        'spiderX': spiderX,
+      };
     }
   }
 

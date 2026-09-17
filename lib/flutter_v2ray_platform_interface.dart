@@ -45,6 +45,8 @@ abstract class FlutterV2rayPlatform extends PlatformInterface {
     required void Function(V2RayStatus status) onStatusChanged,
     required String notificationIconResourceType,
     required String notificationIconResourceName,
+    required String providerBundleIdentifier,
+    required String groupIdentifier,
   }) {
     throw UnimplementedError('initializeV2Ray() has not been implemented.');
   }

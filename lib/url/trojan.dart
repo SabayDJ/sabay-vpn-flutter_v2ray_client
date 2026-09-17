@@ -34,20 +34,22 @@ class TrojanURL extends V2RayURL {
 
       super.populateTlsSettings(
         streamSecurity: uri.queryParameters['security'] ?? 'tls',
-        allowInsecure: allowInsecure,
         sni: uri.queryParameters['sni'] ?? sni,
-        fingerprint:
-            streamSetting['tlsSettings']?['fingerprint'] ?? 'randomized',
+        fingerprint: uri.queryParameters['fp'] ??
+            streamSetting['tlsSettings']?['fingerprint'] ??
+            'randomized',
         alpns: uri.queryParameters['alpn'],
-        publicKey: null,
-        shortId: null,
-        spiderX: null,
+        publicKey: uri.queryParameters['pbk'],
+        shortId: uri.queryParameters['sid'],
+        spiderX: uri.queryParameters['spx'],
+        pinnedPeerCertSha256: uri.queryParameters['pcs'] ??
+            uri.queryParameters['pinSHA256'],
+        verifyPeerCertByName: uri.queryParameters['vcn'],
       );
       flow = uri.queryParameters['flow'] ?? '';
     } else {
       super.populateTlsSettings(
         streamSecurity: 'tls',
-        allowInsecure: allowInsecure,
         sni: '',
         fingerprint:
             streamSetting['tlsSettings']?['fingerprint'] ?? 'randomized',

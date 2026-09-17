@@ -1,5 +1,3 @@
-# Merged .gitignore for flutter_v2ray_client package
-
 # Dart & Flutter specific ignores
 .dart_tool/
 .packages
@@ -11,9 +9,11 @@
 build/
 **/doc/api/
 
+
 # Lockfiles
 pubspec.lock
 !example/pubspec.lock
+
 
 # IDE & Editor ignores
 .idea/
@@ -21,6 +21,7 @@ pubspec.lock
 *.iml
 *.ipr
 *.iws
+
 
 # Miscellaneous ignores (from remote and local)
 *.class
@@ -33,6 +34,7 @@ pubspec.lock
 .svn/
 migrate_working_dir/
 node_modules/
+
 
 # OS files (combined macOS and general OS ignores)
 .DS_Store
@@ -55,14 +57,15 @@ Temporary Items
 .apdisk
 *.icloud
 
+
 # Android ignores
-AndroidLibXrayLite/
 **/local.properties
 **/.gradle/
 **/captures/
 **/.cxx/
 # Generated registrant (in example app)
 example/android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java
+
 
 # iOS & Xcode ignores
 **/Pods/
@@ -78,6 +81,7 @@ example/android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.j
 *.mode1v3
 *.mode2v3
 *.perspectivev3
+
 
 # Misc ignores
 coverage/

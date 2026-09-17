@@ -83,10 +83,17 @@ class HysteriaURL extends V2RayURL {
   @override
   String get remark => Uri.decodeFull(uri.fragment.replaceAll('+', '%20'));
 
+  String? _tlsParam(String key) {
+    final value = uri.queryParameters[key];
+    return (value == null || value.isEmpty) ? null : value;
+  }
+
   /// Outbound configuration map for the hysteria protocol used by Xray core.
   @override
   Map<String, dynamic> get outbound1 {
-    final sni = uri.queryParameters['sni'];
+    final sni = _tlsParam('sni');
+    final pin = _tlsParam('pcs') ?? _tlsParam('pinSHA256');
+    final vcn = _tlsParam('vcn');
     return {
       'tag': 'proxy',
       'protocol': 'hysteria',
@@ -99,8 +106,10 @@ class HysteriaURL extends V2RayURL {
         'network': 'hysteria',
         'security': uri.queryParameters['security'] ?? 'tls',
         'tlsSettings': {
-          'allowInsecure': allowInsecure,
-          'serverName': (sni == null || sni.isEmpty) ? null : sni,
+          'serverName': sni,
+          'fingerprint': _tlsParam('fp'),
+          'pinnedPeerCertSha256': pin,
+          'verifyPeerCertByName': vcn,
         },
         'hysteriaSettings': {
           'version': version,

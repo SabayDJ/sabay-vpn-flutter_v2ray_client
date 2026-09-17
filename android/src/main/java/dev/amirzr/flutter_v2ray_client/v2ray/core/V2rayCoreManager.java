@@ -77,10 +77,9 @@ public final class V2rayCoreManager {
                     hours = 0;
                 }
                 if (enable_traffic_statics) {
-                    downloadSpeed = (coreController != null ? coreController.queryStats("block", "downlink") : 0)
-                            + (coreController != null ? coreController.queryStats("proxy", "downlink") : 0);
-                    uploadSpeed = (coreController != null ? coreController.queryStats("block", "uplink") : 0)
-                            + (coreController != null ? coreController.queryStats("proxy", "uplink") : 0);
+                    long[] delta = queryOutboundTrafficDelta();
+                    downloadSpeed = delta[0];
+                    uploadSpeed = delta[1];
                     totalDownload = totalDownload + downloadSpeed;
                     totalUpload = totalUpload + uploadSpeed;
                 }
@@ -108,6 +107,51 @@ public final class V2rayCoreManager {
                     makeDurationTimer(context, enable_traffic_statics);
             }
         }.start();
+    }
+
+    /**
+     * Parses {@link CoreController#queryAllOutboundTrafficStats()} output.
+     * Format: tag,direction,value;tag,direction,value;
+     * Keeps previous behavior by summing only "proxy" and "block" outbounds.
+     *
+     * @return long[2] = {downloadDelta, uploadDelta}
+     */
+    private long[] queryOutboundTrafficDelta() {
+        long download = 0;
+        long upload = 0;
+        if (coreController == null) {
+            return new long[] { 0, 0 };
+        }
+        String stats = coreController.queryAllOutboundTrafficStats();
+        if (stats == null || stats.isEmpty()) {
+            return new long[] { 0, 0 };
+        }
+        String[] entries = stats.split(";");
+        for (String entry : entries) {
+            if (entry == null || entry.isEmpty()) {
+                continue;
+            }
+            String[] parts = entry.split(",");
+            if (parts.length != 3) {
+                continue;
+            }
+            String tag = parts[0];
+            if (!"proxy".equals(tag) && !"block".equals(tag)) {
+                continue;
+            }
+            long value;
+            try {
+                value = Long.parseLong(parts[2]);
+            } catch (NumberFormatException e) {
+                continue;
+            }
+            if ("downlink".equals(parts[1])) {
+                download += value;
+            } else if ("uplink".equals(parts[1])) {
+                upload += value;
+            }
+        }
+        return new long[] { download, upload };
     }
 
     public void setUpListener(Service targetService) {
@@ -181,6 +225,14 @@ public final class V2rayCoreManager {
     }
 
     public boolean startCore(final V2rayConfig v2rayConfig) {
+        return startCore(v2rayConfig, 0);
+    }
+
+    /**
+     * @param tunFd VpnService TUN file descriptor for native Xray TUN inbound.
+     *              Pass 0 for proxy-only mode.
+     */
+    public boolean startCore(final V2rayConfig v2rayConfig, int tunFd) {
         makeDurationTimer(v2rayServicesListener.getService().getApplicationContext(),
                 v2rayConfig.ENABLE_TRAFFIC_STATICS);
         V2RAY_STATE = AppConfigs.V2RAY_STATES.V2RAY_CONNECTING;
@@ -197,15 +249,19 @@ public final class V2rayCoreManager {
                 Log.e(V2rayCoreManager.class.getSimpleName(), "startCore failed => coreController is null.");
                 return false;
             }
-            // Configure protector target server and IP family preference before starting
-            // core
             try {
                 String server = v2rayConfig.CONNECTED_V2RAY_SERVER_ADDRESS + ":"
                         + v2rayConfig.CONNECTED_V2RAY_SERVER_PORT;
                 Libv2ray.setProtectorServer(server, false);
             } catch (Exception ignored) {
             }
-            coreController.startLoop(v2rayConfig.V2RAY_FULL_JSON_CONFIG, 0);
+            String config = Utilities.stripRemovedTlsOptions(v2rayConfig.V2RAY_FULL_JSON_CONFIG);
+            if (tunFd > 0) {
+                config = Utilities.ensureTunInbound(config, 1500);
+            }
+            Log.i(V2rayCoreManager.class.getSimpleName(),
+                    "startCore => tunFd=" + tunFd);
+            coreController.startLoop(config, tunFd);
             V2RAY_STATE = AppConfigs.V2RAY_STATES.V2RAY_CONNECTED;
             if (isV2rayCoreRunning()) {
                 showNotification(v2rayConfig);
@@ -391,8 +447,9 @@ public final class V2rayCoreManager {
 
     public Long getV2rayServerDelay(final String config, final String url) {
         try {
+            String sanitized = Utilities.stripRemovedTlsOptions(config);
             try {
-                JSONObject config_json = new JSONObject(config);
+                JSONObject config_json = new JSONObject(sanitized);
                 JSONObject new_routing_json = config_json.getJSONObject("routing");
                 new_routing_json.remove("rules");
                 config_json.remove("routing");
@@ -400,7 +457,7 @@ public final class V2rayCoreManager {
                 return Libv2ray.measureOutboundDelay(config_json.toString(), url);
             } catch (Exception json_error) {
                 Log.e("getV2rayServerDelay", json_error.toString());
-                return Libv2ray.measureOutboundDelay(config, url);
+                return Libv2ray.measureOutboundDelay(sanitized, url);
             }
         } catch (Exception e) {
             Log.e("getV2rayServerDelayCore", e.toString());

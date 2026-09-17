@@ -41,13 +41,20 @@ class VmessURL extends V2RayURL {
             : streamSetting['tlsSettings']?['fingerprint'];
     super.populateTlsSettings(
       streamSecurity: rawConfig['tls'],
-      allowInsecure: allowInsecure,
-      sni: sni,
+      sni: rawConfig['sni']?.toString().isNotEmpty == true
+          ? rawConfig['sni'].toString()
+          : sni,
       fingerprint: fingerprint,
       alpns: rawConfig['alpn'],
       publicKey: null,
       shortId: null,
       spiderX: null,
+      pinnedPeerCertSha256: (rawConfig['pcs'] ??
+              rawConfig['pinSHA256'] ??
+              rawConfig['pinnedPeerCertSha256'])
+          ?.toString(),
+      verifyPeerCertByName:
+          (rawConfig['vcn'] ?? rawConfig['verifyPeerCertByName'])?.toString(),
     );
   }
 

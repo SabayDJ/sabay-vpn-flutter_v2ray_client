@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.5.0]
+
+### Changed
+- **Core**: Updated Xray core to **v26.9.9** for Android
+- **Traffic**: Migrated traffic stats to `queryAllOutboundTrafficStats` API
+- **TLS**: Stop emitting removed `allowInsecure` TLS option; strip it from saved configs
+- **Freedom**: Move freedom `domainStrategy` to `streamSettings.sockopt.domainStrategy`
+
+### Fixed
+- **Android VPN**: Native TUN (`protocol: tun` + `startLoop(config, tunFd)`) instead of tun2socks
+- **Android**: Align protect path with `RegisterDialerController` / `RegisterListenerController`
+- **VLESS**: Reject plaintext VLESS to public IPs early with a clear parser error
+
+### Added
+- **TLS**: Parse share-link `pcs`/`vcn` into `pinnedPeerCertSha256` / `verifyPeerCertByName`
+
+## [3.4.1]
+
+### Added
+- **Docs**: Linked new sibling plugin [flutter_singbox_client](https://github.com/amir-zr/flutter_singbox_client) in README
+
 ## [3.4.0]
 
 ### Added

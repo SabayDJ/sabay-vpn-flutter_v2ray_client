@@ -25,11 +25,11 @@ Looking for **Sing-box** instead of Xray/V2Ray? Check out our new sibling plugin
 > [<img src="https://img.shields.io/badge/📸_Screenshots-6e5494?style=for-the-badge" height="40">](#-screenshots) [<img src="https://img.shields.io/badge/📱_Platforms-6e5494?style=for-the-badge" height="40">](#-supported-platforms)
 
 > [!IMPORTANT]
-> ### ✨ 3.2.0 — Xray v26.4.17 — 26 May 2026
+> ### ✨ 3.5.0 — Xray v26.9.9 — 17 Sep 2026
 >
-> **3.2.0** updates the embedded core to **Xray v26.4.17**: native **TUN** VPN on Android (less reliance on tun2socks), new options such as **Hysteria2**, **UDPhop**, and obfuscation (Salamander, **FinalMask**), **TLS certificate pinning** (`pinnedPeerCertSha256`) instead of the old insecure mode, and stronger **REALITY** plus **XDNS** for mobile. Expect lower memory use, fewer crashes, and more stable TUN/background behavior on Android.
+> **3.5.0** updates the embedded core to **Xray v26.9.9** on Android: native **TUN** VPN via `protocol: tun` + `startLoop(config, tunFd)` (replacing tun2socks), aligned protect path with `RegisterDialerController` / `RegisterListenerController`, traffic stats via `queryAllOutboundTrafficStats`, share-link `pcs`/`vcn` → `pinnedPeerCertSha256` / `verifyPeerCertByName`, removal of `allowInsecure`, and freedom `domainStrategy` moved to `streamSettings.sockopt.domainStrategy`.
 >
-> [Full 3.2.0 release notes in **CHANGELOG** →](CHANGELOG.md#320)
+> [Full 3.5.0 release notes in **CHANGELOG** →](CHANGELOG.md#350)
 
 ## ✨ Premium Features
 
@@ -103,11 +103,11 @@ Looking for **Sing-box** instead of Xray/V2Ray? Check out our new sibling plugin
 ## 📱 Supported Platforms
 | Platform | Status | Info                                     | Updated    | Type                               |
 | -------- | ------ | ---------------------------------------- | ---------- | ---------------------------------- |
-| Android  | Done ✅ | Xray 26.6.1                              | 2026-06-17 | Free                               |
-| iOS      | Done ✅ | Xray 26.6.1 <br/> HevSocks5Tunnel 5.14.1 | 2026-06-17 | [Buy Now](https://t.me/AmirZrDevv) |
-| Windows  | Done ✅ | Xray 26.6.1 <br/> Sing Box 1.13.12       | 2026-06-17 | [Buy Now](https://t.me/AmirZrDevv) |
-| Linux    | Done ✅ | Xray 26.6.1 <br/> Sing Box 1.13.12       | 2026-06-17 | [Buy Now](https://t.me/AmirZrDevv) |
-| macOS    | Done ✅ | Xray 26.6.1 <br/> Sing Box 1.13.12       | 2026-06-17 | [Buy Now](https://t.me/AmirZrDevv) |
+| Android  | Done ✅ | Xray 26.9.9                              | 2026-09-17 | Free                               |
+| iOS      | Done ✅ | Xray 26.9.9  | 2026-09-17 | [Buy Now](https://t.me/AmirZrDevv) |
+| Windows  | Done ✅ | Xray 26.9.9 <br/> Sing Box 1.14.0       | 2026-09-17 | [Buy Now](https://t.me/AmirZrDevv) |
+| Linux    | Done ✅ | Xray 26.9.9 <br/> Sing Box 1.14.0       | 2026-09-17 | [Buy Now](https://t.me/AmirZrDevv) |
+| macOS    | Done ✅ | Xray 26.9.9 <br/> Sing Box 1.14.0       | 2026-09-17 | [Buy Now](https://t.me/AmirZrDevv) |
 
 <br>
 
@@ -124,7 +124,7 @@ Or you can manually add flutter_v2ray_client into the dependencies section in yo
 
 ```yaml
 dependencies:
-  flutter_v2ray_client: ^3.0.0
+  flutter_v2ray_client: ^3.5.0
 ```
 
 <br>

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_v2ray_client/flutter_v2ray.dart';
@@ -12,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter V2Ray',
+      title: 'Flutter V2Ray Client',
       theme: ThemeData(
         useMaterial3: true,
         brightness: Brightness.dark,
@@ -105,38 +107,37 @@ class _HomePageState extends State<HomePage> {
     bypassSubnetController.text = bypassSubnets.join("\n");
     showDialog(
       context: context,
-      builder:
-          (context) => Dialog(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text('Subnets:', style: TextStyle(fontSize: 16)),
-                  const SizedBox(height: 5),
-                  TextFormField(
-                    controller: bypassSubnetController,
-                    maxLines: 5,
-                    minLines: 5,
-                  ),
-                  const SizedBox(height: 5),
-                  ElevatedButton(
-                    onPressed: () {
-                      bypassSubnets = bypassSubnetController.text.trim().split(
+      builder: (context) => Dialog(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Subnets:', style: TextStyle(fontSize: 16)),
+              const SizedBox(height: 5),
+              TextFormField(
+                controller: bypassSubnetController,
+                maxLines: 5,
+                minLines: 5,
+              ),
+              const SizedBox(height: 5),
+              ElevatedButton(
+                onPressed: () {
+                  bypassSubnets = bypassSubnetController.text.trim().split(
                         '\n',
                       );
-                      if (bypassSubnets.first.isEmpty) {
-                        bypassSubnets = [];
-                      }
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('Submit'),
-                  ),
-                ],
+                  if (bypassSubnets.first.isEmpty) {
+                    bypassSubnets = [];
+                  }
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Submit'),
               ),
-            ),
+            ],
           ),
+        ),
+      ),
     );
   }
 
@@ -145,13 +146,15 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     flutterV2ray
         .initialize(
-          notificationIconResourceType: "mipmap",
-          notificationIconResourceName: "ic_launcher",
-        )
+      notificationIconResourceType: "mipmap",
+      notificationIconResourceName: "ic_launcher",
+      providerBundleIdentifier: "dev.amirzr.flutterV2rayMobile",
+      groupIdentifier: "group.dev.amirzr.flutterV2rayMobile",
+    )
         .then((value) async {
-          coreVersion = await flutterV2ray.getCoreVersion();
-          setState(() {});
-        });
+      coreVersion = await flutterV2ray.getCoreVersion();
+      setState(() {});
+    });
   }
 
   @override
@@ -246,18 +249,19 @@ class _HomePageState extends State<HomePage> {
                     onPressed: bypassSubnet,
                     child: const Text('Bypass Subnet'),
                   ),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LogViewerPage(),
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.article),
-                    label: const Text('View Logs'),
-                  ),
+                  if (!Platform.isIOS)
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LogViewerPage(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.article),
+                      label: const Text('View Logs'),
+                    ),
                 ],
               ),
             ),

@@ -30,10 +30,7 @@ class V2ray {
   /// Returns a [Future] that completes with true if permission is granted, otherwise false.
   /// On non-Android platforms, it defaults to granting permission.
   Future<bool> requestPermission() async {
-    if (Platform.isAndroid) {
-      return FlutterV2rayPlatform.instance.requestPermission();
-    }
-    return true;
+    return await FlutterV2rayPlatform.instance.requestPermission();
   }
 
   /// Initializes the V2Ray client with notification settings and a status change callback.
@@ -43,11 +40,15 @@ class V2ray {
   Future<void> initialize({
     String notificationIconResourceType = 'mipmap',
     String notificationIconResourceName = 'ic_launcher',
+    String providerBundleIdentifier = '',
+    String groupIdentifier = '',
   }) async {
     await FlutterV2rayPlatform.instance.initializeV2Ray(
       onStatusChanged: onStatusChanged,
       notificationIconResourceType: notificationIconResourceType,
       notificationIconResourceName: notificationIconResourceName,
+      providerBundleIdentifier: providerBundleIdentifier,
+      groupIdentifier: groupIdentifier,
     );
   }
 
@@ -132,10 +133,7 @@ class V2ray {
   /// On Android, this fetches logs filtered by V2Ray related tags.
   /// On non-Android platforms, returns an empty list.
   Future<List<String>> getLogs() async {
-    if (Platform.isAndroid) {
-      return FlutterV2rayPlatform.instance.getLogs();
-    }
-    return [];
+    return FlutterV2rayPlatform.instance.getLogs();
   }
 
   /// Clears the V2Ray logs from the system logcat.
@@ -143,10 +141,7 @@ class V2ray {
   /// On Android, this clears the logcat buffer.
   /// On non-Android platforms, returns true.
   Future<bool> clearLogs() async {
-    if (Platform.isAndroid) {
-      return FlutterV2rayPlatform.instance.clearLogs();
-    }
-    return true;
+    return FlutterV2rayPlatform.instance.clearLogs();
   }
 
   /// Parses a V2Ray URL string and returns the corresponding V2RayURL object.
