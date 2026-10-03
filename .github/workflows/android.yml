@@ -25,13 +25,17 @@ jobs:
           channel: 'stable'
 
       - name: Get Flutter Packages
-        run: flutter pub get
+        run: |
+          cd example
+          flutter pub get
 
       - name: Build APK (Debug)
-        run: flutter build apk --debug
+        run: |
+          cd example
+          flutter build apk --debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: sabay-vpn-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          path: example/build/app/outputs/flutter-apk/app-debug.apk
